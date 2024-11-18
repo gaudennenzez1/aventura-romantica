@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test del Amor</title>
+
+  <!-- Estilos CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> <!-- Fuente Dancing Script -->
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffe6e6;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    /* Estilo general */
+    .container {
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #ff6b6b;
+      margin-bottom: 20px;
+    }
+
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      padding: 10px;
+      border: 2px solid #ff6b6b;
+      border-radius: 5px;
+      background-color: #ffe6e6;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #ffcccc;
+    }
+
+    .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .button:hover {
+      transform: scale(1.1);
+    }
+
+    .music-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .music-button:hover {
+      transform: scale(1.1);
+    }
+
+    .result {
+      font-size: 1.5rem;
+      color: #444;
+      margin-top: 20px;
+    }
+
+    .success {
+      color: #28a745;
+    }
+
+    .failure {
+      color: #dc3545;
+    }
+
+    /* Estilos para los emojis de fondo */
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 10s infinite linear;
+      opacity: 0.7;
+    }
+
+    /* Animación para los emojis */
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.7;
+      }
+      50% {
+        transform: translateY(-50vh) rotate(180deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="test-container">
+    <h1>¡Descubre cuánto sabes de nuestro amor!</h1>
+    <div class="question-container" id="question-container">
+      <div class="question" id="question-text">Pregunta 1: ¿Cuál fue nuestro primer encuentro?</div>
+      <div class="options">
+        <div class="option" onclick="selectOption(0)">Reuniones</div>
+        <div class="option" onclick="selectOption(1)">Podcast</div>
+        <div class="option" onclick="selectOption(2)">VC</div>
+      </div>
+    </div>
+    <button class="button" onclick="nextQuestion()">Siguiente</button>
+    <div class="result" id="result-text" style="display: none;"></div>
+  </div>
+
+  <!-- Botón de música -->
+  <button class="music-button" id="music-button" onclick="toggleMusic()">Reproducir música</button>
+  
+  <!-- Audio -->
+  <audio id="background-music" src="audios/Romance.mp3" loop></audio>
+
+  <script>
+    // Preguntas y respuestas
+    const questions = [
+      {
+        text: "¿Cuál fue nuestro primer encuentro?",
+        options: ["Reuniones", "Podcast", "VC"],
+        correct: 1
+      },
+      {
+        text: "¿Cuál es nuestra canción favorita?",
+        options: ["Die With a Smile", "Perfect", "Angel"],
+        correct: 0
+      },
+      {
+        text: "¿Qué color me recuerda a ti?",
+        options: ["Rojo", "Azul", "Morado"],
+        correct: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function selectOption(selectedIndex) {
+      const question = questions[currentQuestion];
+      if (selectedIndex === question.correct) {
+        score++;
+        document.getElementById("result-text").textContent = "¡Correcto!";
+        document.getElementById("result-text").className = "result success";
+      } else {
+        document.getElementById("result-text").textContent = "Ups, no era esa.";
+        document.getElementById("result-text").className = "result failure";
+      }
+      document.getElementById("result-text").style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      document.getElementById("result-text").style.display = "none";
+
+      if (currentQuestion < questions.length) {
+        const question = questions[currentQuestion];
+        document.getElementById("question-text").textContent = question.text;
+        const options = document.querySelectorAll(".option");
+        options.forEach((option, index) => {
+          option.textContent = question.options[index];
+        });
+      } else {
+        showFinalResult();
+      }
+    }
+
+    function showFinalResult() {
+      const container = document.getElementById("test-container");
+      container.innerHTML = ` 
+        <h1>¡Resultados del Test!</h1>
+        <div class="result">Puntaje final: ${score} de ${questions.length}</div>
+        <p>${score === questions.length ? "¡Eres un experto en nuestro amor! ❤️" : "¡Vamos a aprender más de nosotros! 💕"}</p>
+      `;
+    }
+
+    // Función para alternar la música
+    let isMusicPlaying = false;
+
+    function toggleMusic() {
+      const music = document.getElementById("background-music");
+      const button = document.getElementById("music-button");
+
+      if (isMusicPlaying) {
+        music.pause();
+        button.textContent = "Reproducir música";
+      } else {
+        music.play();
+        button.textContent = "Pausar música";
+      }
+
+      isMusicPlaying = !isMusicPlaying;
+    }
+
+    // Función para generar emojis de fondo
+    function createEmojis() {
+      const body = document.body;
+      const emojis = ['❤️', '💋', '🌹', '💕'];
+      const maxEmojis = 20;
+
+      setInterval(() => {
+        const emoji = document.createElement('div');
+        emoji.className = 'emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = `${Math.random() * 100}vw`;
+        emoji.style.top = `100vh`;
+        emoji.style.fontSize = `${Math.random() * 3 + 2}rem`;
+        emoji.style.animationDuration = `${Math.random() * 4 + 6}s`;
+        body.appendChild(emoji);
+
+        setTimeout(() => body.removeChild(emoji), 10000);
+      }, 500);
+    }
+
+    // Llamar a la función para crear emojis al cargar la página
+    createEmojis();
+  </script>
+</body>
+</html>
